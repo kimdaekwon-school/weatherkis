@@ -283,6 +283,58 @@
       line-height: 1.4;
     }
 
+    /* 🛡️ 신뢰도 배지 & 설명 */
+    .hero-confidence-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .confidence-pill {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .confidence-pill.conf-high {
+      background: rgba(0, 177, 64, 0.25);
+      border: 1px solid rgba(0, 177, 64, 0.6);
+      color: #4ade80;
+    }
+
+    .confidence-pill.conf-mid {
+      background: rgba(255, 184, 0, 0.25);
+      border: 1px solid rgba(255, 184, 0, 0.6);
+      color: #fde047;
+    }
+
+    .confidence-desc {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+    }
+
+    /* ⚡ 비 이동 속도 계산 라인 */
+    .hero-speed-note {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 11px;
+      color: var(--accent-mint);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 600;
+    }
+
     .hero-icon-bg {
       position: absolute;
       right: -10px;
@@ -742,8 +794,65 @@
       border-radius: 16px;
       padding: 12px 14px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
+    }
+
+    .flood-content {
+      flex: 1;
+    }
+
+    .flood-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 5px;
+      flex-wrap: wrap;
+      font-size: 11px;
+      color: var(--primary-navy);
+    }
+
+    .water-level-badge-wrap {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .level-chip {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .level-chip.active.chip-safe {
+      background: #E8F8F0;
+      color: #00B140;
+      border: 1px solid #A3E6C2;
+      font-weight: 800;
+    }
+
+    .level-chip.active.chip-caution {
+      background: #FFF8E6;
+      color: #D97706;
+      border: 1px solid #FCD34D;
+      font-weight: 800;
+    }
+
+    .level-chip.active.chip-danger {
+      background: #FEE2E2;
+      color: #EF4444;
+      border: 1px solid #FCA5A5;
+      font-weight: 800;
+      animation: pulseAlert 1.5s infinite;
+    }
+
+    @keyframes pulseAlert {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.04); }
     }
 
     .flood-bell {
@@ -954,12 +1063,11 @@
       </div>
       <div class="demo-buttons">
         <button class="demo-btn" id="btnSunny" onclick="applyMode('sunny')"><i class="fa-solid fa-sun"></i> 맑음</button>
-        <button class="demo-btn active" id="btnWarning" onclick="applyMode('warning')"><i
-            class="fa-solid fa-clock-rotate-left"></i> 9분전 예보</button>
-        <button class="demo-btn" id="btnRain" onclick="applyMode('rain')"><i
-            class="fa-solid fa-cloud-showers-heavy"></i> 비 내림</button>
-        <button class="demo-btn" id="btnClear" onclick="applyMode('clear')"><i class="fa-solid fa-cloud-sun"></i> 비
-          그침</button>
+        <button class="demo-btn" id="btnPre" onclick="applyMode('pre')"><i class="fa-solid fa-eye"></i> 예비</button>
+        <button class="demo-btn active" id="btnPrep" onclick="applyMode('prep')"><i class="fa-solid fa-clock"></i> 1차 준비</button>
+        <button class="demo-btn" id="btnWarning" onclick="applyMode('warning')"><i class="fa-solid fa-triangle-exclamation"></i> 2차 긴급</button>
+        <button class="demo-btn" id="btnRain" onclick="applyMode('rain')"><i class="fa-solid fa-cloud-showers-heavy"></i> 비 내림</button>
+        <button class="demo-btn" id="btnClear" onclick="applyMode('clear')"><i class="fa-solid fa-cloud-sun"></i> 비 그침</button>
       </div>
     </div>
 
@@ -992,22 +1100,40 @@
     <div class="app-scroll">
 
       <!-- 🚨 Early Warning Hero Card (토스 감성의 깔끔하고 강력한 경보) -->
-      <div class="hero-warning-card" id="heroCard">
+      <div class="hero-warning-card" id="heroCard" style="background: linear-gradient(135deg, #382006, #1C1004);">
         <div class="hero-badge-row">
-          <div class="hero-pill" id="heroPill">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <span id="heroPillText">초단기 소나기 경보</span>
+          <div class="hero-pill" id="heroPill" style="background: #D97706;">
+            <i class="fa-solid fa-clock"></i>
+            <span id="heroPillText">1차 준비 알림</span>
           </div>
           <div class="hero-timer-box" id="heroTimer">09:00 남음</div>
         </div>
 
+        <!-- 🛡️ 신뢰도 배지 행 -->
+        <div class="hero-confidence-row" id="confidenceRow">
+          <div class="confidence-pill conf-high" id="confidencePill">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="confidencePillText">신뢰도: 높음</span>
+          </div>
+          <div class="confidence-desc" id="confidenceDesc">
+            외곽 빗방울 감지 + 본관 4층 기압 변화 동시 확인
+          </div>
+        </div>
+
         <div class="hero-main-title" id="heroTitle">
-          스카이가든 & 시닉밸리 비 감지!<br>약 9분 뒤 KIS 본관에 소나기가 쏟아집니다.
+          시닉밸리(2km) 비 감지!<br>약 9분 뒤 KIS에 비가 예상됩니다.
         </div>
         <div class="hero-main-desc" id="heroDesc">
-          외곽 3km 스카이가든 1차 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.
+          지금부터 우산·우비를 준비하고 야외 활동 계획을 확인하세요.
         </div>
-        <i class="fa-solid fa-cloud-showers-heavy hero-icon-bg" id="heroBgIcon"></i>
+
+        <!-- ⚡ 비 이동 속도 계산 라인 -->
+        <div class="hero-speed-note" id="heroSpeedNote">
+          <i class="fa-solid fa-gauge-high"></i>
+          <span id="heroSpeedText">현재 비 이동 속도 약 13km/h (스카이가든→시닉밸리 1km를 4분 37초에 이동)</span>
+        </div>
+
+        <i class="fa-solid fa-cloud-bolt hero-icon-bg" id="heroBgIcon"></i>
       </div>
 
       <!-- KIS Campus Weather Overview -->
@@ -1018,7 +1144,7 @@
               <i class="fa-solid fa-location-dot" style="color: var(--accent-blue);"></i> 호치민 7군 KIS 캠퍼스
             </div>
             <div class="weather-degrees" id="wTemp">32°</div>
-            <div class="weather-summary-tag" id="wDesc">먹구름 급접근 중 (습도 88%)</div>
+            <div class="weather-summary-tag" id="wDesc">먹구름 급접근 중</div>
           </div>
           <div class="weather-right-icon" id="wIcon">
             <i class="fa-solid fa-cloud-bolt"></i>
@@ -1051,7 +1177,7 @@
           </div>
           <div class="science-caption" id="scienceCaption">
             <i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 소나기 구름 전면의 돌풍으로 <strong>단기 기압
-              변동폭(ΔP)</strong>이 급격히 요동치고 있습니다. 외곽 센서 감지 거리와 구름 이동 벡터 연산으로 도달 시간을 예측합니다.
+              변동폭(ΔP)</strong>이 급격히 요동치고 있습니다. 외곽 거점 사이를 비가 이동한 시간으로 속도를 계산해 도달 시간을 예측합니다.
           </div>
         </div>
       </div>
@@ -1069,10 +1195,10 @@
         <div class="checklist-container">
           <div class="check-item" onclick="toggleCheck(this)">
             <div class="check-left">
-              <div class="check-icon-box icon-laundry"><i class="fa-solid fa-shirt"></i></div>
+              <div class="check-icon-box icon-laundry" style="background: rgba(239, 68, 68, 0.12); color: #EF4444;"><i class="fa-solid fa-person-running"></i></div>
               <div>
-                <div class="check-text-title">기숙사 베란다 빨래 걷기</div>
-                <div class="check-text-sub">스콜성 폭우로 빨래 젖음 방지</div>
+                <div class="check-text-title">운동장·풋살장 야외 활동 중단</div>
+                <div class="check-text-sub">비 오기 전 실내로 이동</div>
               </div>
             </div>
             <div class="check-circle-btn"><i class="fa-solid fa-check"></i></div>
@@ -1109,7 +1235,7 @@
             <i class="fa-solid fa-satellite-dish"></i>
             <span>캠퍼스 & 푸미흥 센서 네트워크</span>
           </div>
-          <span style="font-size: 11px; color: var(--accent-blue); font-weight: 700;">🗺️ 5대 노드 연동 (동남쪽 예외 대비)</span>
+          <span style="font-size: 11px; color: var(--accent-blue); font-weight: 700;">🗺️ 외곽 3거점 + 캠퍼스 센서 연동</span>
         </div>
 
         <div class="map-wrapper">
@@ -1138,7 +1264,7 @@
               <span class="feed-time">방금 전</span>
             </div>
             <div class="feed-content">
-              스카이라인 쪽 하늘도 살짝 어두워졌는데 Node E 센서는 아직 맑음이네요! 동남쪽 방향은 이상 없습니다 👍
+              스카이라인 센서는 아직 맑음이네요! 동남쪽 방향은 이상 없습니다 👍
             </div>
           </div>
 
@@ -1151,7 +1277,7 @@
               <span class="feed-time">1분 전</span>
             </div>
             <div class="feed-content">
-              시닉밸리 사는데 방금 저희 동 베란다 센서에 빗방울 감지 알림 떴어요! KIS에 계신 분들 빨래 걷으세요 ㄷㄷ
+              시닉밸리 사는데 방금 저희 동 베란다 센서에 빗방울 감지 알림 떴어요! KIS에 계신 분들 창문 닫으세요 ㄷㄷ
             </div>
           </div>
 
@@ -1164,7 +1290,7 @@
               <span class="feed-time">3분 전</span>
             </div>
             <div class="feed-content">
-              스카이가든 1차 센서 알림 뜨자마자 체육 쌤이 강당으로 들어오라고 방송하셨어요! 센서 속도 미쳤네 ㄷㄷ
+              시닉밸리 1차 알림 뜨자마자 체육 쌤한테 실내 전환 안내가 가서, 비 오기 전에 강당으로 들어왔어요! ㄷㄷ
             </div>
           </div>
 
@@ -1187,9 +1313,18 @@
       <!-- 7군 상습 도로 침수 안내 -->
       <div class="hcmc-flood-card" id="floodCard">
         <i class="fa-solid fa-triangle-exclamation flood-bell"></i>
-        <div class="flood-text">
-          <strong>호치민 7군 하교길 도로 안내:</strong><br>
-          Nguyễn Thị Thập 삼거리 상습 침수 구역입니다. 폭우 시작 시 안전한 우회로를 이용하세요.
+        <div class="flood-content">
+          <div class="flood-status-row">
+            <strong>정문 앞 도로 수위:</strong>
+            <div class="water-level-badge-wrap">
+              <span class="level-chip chip-safe" id="levelSafe">안전</span>
+              <span class="level-chip chip-caution active" id="levelCaution">주의 (물고임)</span>
+              <span class="level-chip chip-danger" id="levelDanger">침수 (우회)</span>
+            </div>
+          </div>
+          <div class="flood-text" id="floodText">
+            소나기 접근 중: Nguyễn Thị Thập 삼거리 일부 물고임 가능성이 있습니다.
+          </div>
         </div>
       </div>
 
@@ -1309,23 +1444,39 @@
         markerB.setIcon(makeSensorPin('b', 'fa-building-shield', 'Node B: 시닉밸리 (정상)', false));
         markerC.setIcon(makeSensorPin('c', 'fa-door-open', 'Node C: KIS 정문 (정상)', false));
         markerD.setIcon(makeSensorPin('d', 'fa-gauge-high', 'Node D: 본관 4층 (정상)', false));
-        markerE.setIcon(makeSensorPin('e', 'fa-shield-halved', 'Node E: 스카이라인 (정상)', false));
+        markerE.setIcon(makeSensorPin('e', 'fa-shield-halved', '스카이라인 (동남 2.5km)', false));
         cloudPath.setStyle({ opacity: 0.15, color: '#00B140' });
         exceptionPath.setStyle({ opacity: 0.15, color: '#00B140' });
-      } else if (mode === 'warning') {
+      } else if (mode === 'pre') {
+        markerA.setIcon(makeSensorPin('a', 'fa-cloud-rain', 'Node A: 스카이가든 (약한 비 감지)', true));
+        markerB.setIcon(makeSensorPin('b', 'fa-building-shield', 'Node B: 시닉밸리 (대기)', false));
+        markerC.setIcon(makeSensorPin('c', 'fa-door-open', 'Node C: KIS 정문 (정상)', false));
+        markerD.setIcon(makeSensorPin('d', 'fa-gauge-high', 'Node D: 본관 4층 (관측 중)', false));
+        markerE.setIcon(makeSensorPin('e', 'fa-shield-halved', '스카이라인 (동남 2.5km)', false));
+        cloudPath.setStyle({ opacity: 0.45, color: '#EAB308' });
+        exceptionPath.setStyle({ opacity: 0.15, color: '#00B140' });
+      } else if (mode === 'prep') {
         markerA.setIcon(makeSensorPin('a', 'fa-cloud-rain', 'Node A: 스카이가든 (비 감지)', true));
         markerB.setIcon(makeSensorPin('b', 'fa-cloud-rain', 'Node B: 시닉밸리 (비 감지!)', true));
-        markerC.setIcon(makeSensorPin('c', 'fa-door-open', 'Node C: KIS 정문 (대기)', false));
-        markerD.setIcon(makeSensorPin('d', 'fa-triangle-exclamation', 'Node D: 기압 급변!', true));
-        markerE.setIcon(makeSensorPin('e', 'fa-shield-halved', 'Node E: 스카이라인 (경계)', false));
-        cloudPath.setStyle({ opacity: 0.85, color: '#FF4757' });
-        exceptionPath.setStyle({ opacity: 0.4, color: '#E056FD' });
+        markerC.setIcon(makeSensorPin('c', 'fa-door-open', 'Node C: KIS 정문 (준비 대기)', false));
+        markerD.setIcon(makeSensorPin('d', 'fa-triangle-exclamation', 'Node D: 기압 변동 포착', true));
+        markerE.setIcon(makeSensorPin('e', 'fa-shield-halved', '스카이라인 (동남 2.5km)', false));
+        cloudPath.setStyle({ opacity: 0.85, color: '#F59E0B' });
+        exceptionPath.setStyle({ opacity: 0.25, color: '#49C5B1' });
+      } else if (mode === 'warning') {
+        markerA.setIcon(makeSensorPin('a', 'fa-cloud-showers-heavy', 'Node A: 스카이가든 (폭우)', true));
+        markerB.setIcon(makeSensorPin('b', 'fa-cloud-showers-heavy', 'Node B: 시닉밸리 (폭우 접근)', true));
+        markerC.setIcon(makeSensorPin('c', 'fa-door-open', 'Node C: KIS 정문 (긴급 대피)', false));
+        markerD.setIcon(makeSensorPin('d', 'fa-triangle-exclamation', 'Node D: 기압 요동 극대!', true));
+        markerE.setIcon(makeSensorPin('e', 'fa-shield-halved', '스카이라인 (동남 2.5km)', false));
+        cloudPath.setStyle({ opacity: 0.95, color: '#EF4444' });
+        exceptionPath.setStyle({ opacity: 0.35, color: '#E056FD' });
       } else if (mode === 'rain') {
         markerA.setIcon(makeSensorPin('a', 'fa-cloud-showers-heavy', 'Node A: 폭우 중', true));
         markerB.setIcon(makeSensorPin('b', 'fa-cloud-showers-heavy', 'Node B: 폭우 중', true));
-        markerC.setIcon(makeSensorPin('c', 'fa-water', 'Node C: 침수 주의!', true));
+        markerC.setIcon(makeSensorPin('c', 'fa-water', 'Node C: 정문 도로 침수 주의!', true));
         markerD.setIcon(makeSensorPin('d', 'fa-cloud-showers-heavy', 'Node D: 본관 폭우', true));
-        markerE.setIcon(makeSensorPin('e', 'fa-cloud-showers-heavy', 'Node E: 비 감지', true));
+        markerE.setIcon(makeSensorPin('e', 'fa-cloud-showers-heavy', '스카이라인 (동남 2.5km)', true));
         cloudPath.setStyle({ opacity: 0.9, color: '#49C5B1' });
         exceptionPath.setStyle({ opacity: 0.8, color: '#49C5B1' });
       } else if (mode === 'clear') {
@@ -1333,7 +1484,7 @@
         markerB.setIcon(makeSensorPin('b', 'fa-sun', 'Node B: 비 그침', false));
         markerC.setIcon(makeSensorPin('c', 'fa-check', 'Node C: 빗줄기 약화', false));
         markerD.setIcon(makeSensorPin('d', 'fa-sun', 'Node D: 기압 회복', false));
-        markerE.setIcon(makeSensorPin('e', 'fa-sun', 'Node E: 비 그침', false));
+        markerE.setIcon(makeSensorPin('e', 'fa-sun', '스카이라인 (동남 2.5km)', false));
         cloudPath.setStyle({ opacity: 0.2, color: '#49C5B1' });
         exceptionPath.setStyle({ opacity: 0.2, color: '#49C5B1' });
       }
@@ -1411,7 +1562,52 @@
       showToast('📡 IoT 노드 5기 패킷 수신: 스카이가든, 시닉밸리, 스카이라인, 정문, 본관 정상 (21ms)');
     }
 
-    /* 🎮 발표 시연 모드 컨트롤러 (2026 KISSC 컬러 반영) */
+    /* 🛡️ 신뢰도 배지 컨트롤러 */
+    function setConfidence(level = 'none') {
+      const row = document.getElementById('confidenceRow');
+      const pill = document.getElementById('confidencePill');
+      const pillText = document.getElementById('confidencePillText');
+      const desc = document.getElementById('confidenceDesc');
+      if (!row || !pill || !desc) return;
+
+      if (level === 'none') {
+        row.style.display = 'none';
+        return;
+      }
+      row.style.display = 'flex';
+      if (level === 'high') {
+        pill.className = 'confidence-pill conf-high';
+        pillText.innerText = '신뢰도: 높음';
+        desc.innerText = '외곽 빗방울 감지 + 본관 4층 기압 변화 동시 확인';
+      } else {
+        pill.className = 'confidence-pill conf-mid';
+        pillText.innerText = '신뢰도: 보통';
+        desc.innerText = '외곽 빗방울 센서만 감지 (기압 변화 미발생)';
+      }
+    }
+
+    /* 🌊 도로 수위 단계 칩 컨트롤러 */
+    function setFloodLevel(level) {
+      const safe = document.getElementById('levelSafe');
+      const caution = document.getElementById('levelCaution');
+      const danger = document.getElementById('levelDanger');
+      const text = document.getElementById('floodText');
+      if (!safe || !caution || !danger || !text) return;
+
+      safe.className = 'level-chip chip-safe' + (level === 'safe' ? ' active' : '');
+      caution.className = 'level-chip chip-caution' + (level === 'caution' ? ' active' : '');
+      danger.className = 'level-chip chip-danger' + (level === 'danger' ? ' active' : '');
+
+      if (level === 'safe') {
+        text.innerText = '현재 학교 앞 도로가 원활하며 물고임이 없습니다.';
+      } else if (level === 'caution') {
+        text.innerText = '소나기 접근 중: Nguyễn Thị Thập 삼거리 일부 물고임 가능성이 있습니다.';
+      } else if (level === 'danger') {
+        text.innerText = '폭우로 인한 Tân Phú 도로 침수 주의! 정문 출구 안전 우회로를 이용하세요.';
+      }
+    }
+
+    /* 🎮 발표 시연 모드 컨트롤러 (6단계 모드 완벽 지원) */
     function applyMode(mode) {
       document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'));
 
@@ -1422,6 +1618,7 @@
       const heroTitle = document.getElementById('heroTitle');
       const heroDesc = document.getElementById('heroDesc');
       const heroBgIcon = document.getElementById('heroBgIcon');
+      const heroSpeedNote = document.getElementById('heroSpeedNote');
 
       const wTemp = document.getElementById('wTemp');
       const wDesc = document.getElementById('wDesc');
@@ -1433,50 +1630,120 @@
       updateMapMarkers(mode);
 
       if (mode === 'sunny') {
+        // ① 맑음: 평상시 상태, 강우 없음 표시, 카운트다운 없음
         document.getElementById('btnSunny').classList.add('active');
         clearInterval(timerId);
 
         heroCard.style.background = '#050A33';
         heroPill.style.background = '#00B140';
         heroPillText.innerText = '날씨 평온';
-        heroTimer.innerText = '맑음 (안정)';
-        heroTitle.innerHTML = '현재 KIS 상공은 맑습니다.<br>비구름 접근 징후가 없습니다.';
+        heroTimer.innerText = '강우 없음';
+        heroTitle.innerHTML = '현재 학교 주변 강우 없음<br>비구름 접근 징후가 없습니다.';
         heroDesc.innerText = '체육 수업 및 야외 활동을 하기에 아주 좋은 날씨입니다.';
         heroBgIcon.className = 'fa-solid fa-sun hero-icon-bg';
 
+        setConfidence('none');
+        if (heroSpeedNote) heroSpeedNote.style.display = 'none';
+
         wTemp.innerText = '34°';
-        wDesc.innerText = '맑고 쾌적함 (습도 56%)';
+        wDesc.innerText = '맑고 쾌적함';
         wIcon.innerHTML = '<i class="fa-solid fa-sun" style="color: #FFA502;"></i>';
 
         scienceBar.style.height = '88%';
         scienceBar.className = 'science-bar-fill';
         scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 현재 대기압 <strong>1013 hPa (정상)</strong>으로 기압이 안정되어 있습니다.';
 
-        showToast('맑음 모드: 호치민 평온한 날씨');
+        setFloodLevel('safe');
+        showToast('맑음 모드: 현재 학교 주변 강우 없음');
 
-      } else if (mode === 'warning') {
-        document.getElementById('btnWarning').classList.add('active');
+      } else if (mode === 'pre') {
+        // ② 예비: 회색톤, 알림 없음, 화면 표시만
+        document.getElementById('btnPre').classList.add('active');
+        clearInterval(timerId);
+
+        heroCard.style.background = 'linear-gradient(135deg, #252D3D, #181E2B)';
+        heroPill.style.background = '#6B7280';
+        heroPillText.innerText = '예비 · 알림 없음';
+        heroTimer.innerText = '학교 도착 가능성 확인 중';
+        heroTitle.innerHTML = '외곽 거점(스카이가든 3km) 강우 감지';
+        heroDesc.innerText = '비구름이 학교를 비껴갈 수 있어 알림은 보내지 않고 화면에만 표시합니다. 시닉밸리(2km)에서 감지되면 알림을 보냅니다.';
+        heroBgIcon.className = 'fa-solid fa-cloud hero-icon-bg';
+
+        setConfidence('none');
+        if (heroSpeedNote) heroSpeedNote.style.display = 'none';
+
+        wTemp.innerText = '33°';
+        wDesc.innerText = '외곽 비구름 감시 중';
+        wIcon.innerHTML = '<i class="fa-solid fa-cloud" style="color: #9CA3AF;"></i>';
+
+        scienceBar.style.height = '68%';
+        scienceBar.className = 'science-bar-fill';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 외곽 3km 거점 약한 비 감지. 대기압 변동 모니터링 중입니다.';
+
+        setFloodLevel('safe');
+        showToast('예비 모드: 스카이가든 비 감지 (알림 없이 화면에만 표시)');
+
+      } else if (mode === 'prep') {
+        // ③ 1차 준비: 주황톤, 09:00 카운트다운, 이동속도 라인, 신뢰도 높음
+        document.getElementById('btnPrep').classList.add('active');
         secondsLeft = 540;
         runTimer();
 
-        heroCard.style.background = '#050A33';
-        heroPill.style.background = '#418FDE';
-        heroPillText.innerText = '초단기 소나기 경보';
-        heroTitle.innerHTML = '스카이가든 & 시닉밸리 비 감지!<br>약 9분 뒤 KIS 본관에 소나기가 쏟아집니다.';
-        heroDesc.innerText = '외곽 3km 스카이가든 1차 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.';
-        heroBgIcon.className = 'fa-solid fa-cloud-showers-heavy hero-icon-bg';
+        heroCard.style.background = 'linear-gradient(135deg, #382006, #1C1004)';
+        heroPill.style.background = '#D97706';
+        heroPillText.innerText = '1차 준비 알림';
+        heroTimer.innerText = '09:00 남음';
+        heroTitle.innerHTML = '시닉밸리(2km) 비 감지!<br>약 9분 뒤 KIS에 비가 예상됩니다.';
+        heroDesc.innerText = '지금부터 우산·우비를 준비하고 야외 활동 계획을 확인하세요.';
+        heroBgIcon.className = 'fa-solid fa-cloud-bolt hero-icon-bg';
+
+        setConfidence('high');
+        if (heroSpeedNote) {
+          heroSpeedNote.style.display = 'flex';
+          document.getElementById('heroSpeedText').innerText = '현재 비 이동 속도 약 13km/h (스카이가든→시닉밸리 1km를 4분 37초에 이동)';
+        }
 
         wTemp.innerText = '32°';
-        wDesc.innerText = '먹구름 급접근 중 (습도 88%)';
-        wIcon.innerHTML = '<i class="fa-solid fa-cloud-bolt" style="color: #418FDE;"></i>';
+        wDesc.innerText = '먹구름 급접근 중';
+        wIcon.innerHTML = '<i class="fa-solid fa-cloud-bolt" style="color: #F59E0B;"></i>';
 
         scienceBar.style.height = '35%';
         scienceBar.className = 'science-bar-fill drop';
-        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 스콜 전면부 돌풍으로 <strong>기압 변동폭(ΔP)</strong>이 급격히 증가했습니다. 이동 속도 연산(거리÷속도) 기준 약 9분 후 본관 도달이 예상됩니다.';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 소나기 구름 전면의 돌풍으로 <strong>단기 기압 변동폭(ΔP)</strong>이 급격히 요동치고 있습니다. 외곽 거점 사이를 비가 이동한 시간으로 속도를 계산해 도달 시간을 예측합니다.';
 
-        showToast('초단기 예보: 스카이가든 비 감지 & 기압 급변동 분석!');
+        setFloodLevel('caution');
+        showToast('1차 준비: 시닉밸리 비 감지 (약 9분 전 준비 알림)');
+
+      } else if (mode === 'warning') {
+        // ④ 2차 긴급: 빨강톤, 06:00 카운트다운, 긴급 대피 수칙, 신뢰도 높음
+        document.getElementById('btnWarning').classList.add('active');
+        secondsLeft = 360;
+        runTimer();
+
+        heroCard.style.background = 'linear-gradient(135deg, #450A0A, #1F0707)';
+        heroPill.style.background = '#EF4444';
+        heroPillText.innerText = '2차 긴급 경보';
+        heroTimer.innerText = '06:00 남음';
+        heroTitle.innerHTML = '약 6분 뒤 KIS 본관에 소나기가 쏟아집니다.';
+        heroDesc.innerText = '지금 바로 교실 창문을 닫고 운동장·풋살장에서 실내로 이동하세요.';
+        heroBgIcon.className = 'fa-solid fa-triangle-exclamation hero-icon-bg';
+
+        setConfidence('high');
+        if (heroSpeedNote) heroSpeedNote.style.display = 'none';
+
+        wTemp.innerText = '30°';
+        wDesc.innerText = '스콜 직전 돌풍 발생';
+        wIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #EF4444;"></i>';
+
+        scienceBar.style.height = '20%';
+        scienceBar.className = 'science-bar-fill drop';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 비구름이 학교 1km 이내로 급접근! 골든타임 6분 내 실내 대피 및 창문 단속을 완료하세요.';
+
+        setFloodLevel('caution');
+        showToast('2차 긴급: 약 6분 뒤 학교 본관 소나기 도달 경보!');
 
       } else if (mode === 'rain') {
+        // ⑤ 비 내림: 강우 중, 수위 단계 "침수(우회)" 강조
         document.getElementById('btnRain').classList.add('active');
         clearInterval(timerId);
 
@@ -1485,20 +1752,25 @@
         heroPillText.innerText = '현재 강우 중';
         heroTimer.innerText = '스콜 폭우';
         heroTitle.innerHTML = '학교 본관 및 정문에 비가 시작되었습니다.<br>안전한 실내로 이동해주세요.';
-        heroDesc.innerText = '운동장 체육 활동이 중단되었습니다. 정문 앞 도로 침수 주의!';
+        heroDesc.innerText = '운동장 활동을 멈추고 실내에 머무르세요. 정문 앞 도로 침수 주의!';
         heroBgIcon.className = 'fa-solid fa-cloud-showers-water hero-icon-bg';
+
+        setConfidence('none');
+        if (heroSpeedNote) heroSpeedNote.style.display = 'none';
 
         wTemp.innerText = '27°';
         wDesc.innerText = '강한 스콜 (강수량 22mm/h)';
         wIcon.innerHTML = '<i class="fa-solid fa-cloud-showers-heavy" style="color: #49C5B1;"></i>';
 
-        scienceBar.style.height = '20%';
+        scienceBar.style.height = '15%';
         scienceBar.className = 'science-bar-fill drop';
         scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 정문 및 본관 센서에서도 <strong>강우 및 도로 물고임 감지</strong>. 저기압 중심 통과 중.';
 
+        setFloodLevel('danger');
         showToast('비 도달: 정문 센서 비 도달 및 도로 침수 감지');
 
       } else if (mode === 'clear') {
+        // ⑥ 비 그침: 10분 뒤 그침 예보
         document.getElementById('btnClear').classList.add('active');
         clearInterval(timerId);
 
@@ -1506,9 +1778,12 @@
         heroPill.style.background = '#49C5B1';
         heroPillText.innerText = '비 그침 예보';
         heroTimer.innerText = '약 10분 뒤 그침';
-        heroTitle.innerHTML = '빗줄기가 잦아들고 있습니다.<br>약 10분 뒤 비가 완전히 그칩니다.';
-        heroDesc.innerText = '구름이 동쪽으로 빠져나가고 있습니다. 안전하게 하교하세요!';
+        heroTitle.innerHTML = '외곽 거점에서 비가 멈췄습니다.<br>약 10분 뒤 학교의 비가 그칠 예정입니다.';
+        heroDesc.innerText = '구름이 동쪽으로 빠져나가고 있습니다. 비가 완전히 그친 뒤 안전하게 하교하세요!';
         heroBgIcon.className = 'fa-solid fa-cloud-sun hero-icon-bg';
+
+        setConfidence('none');
+        if (heroSpeedNote) heroSpeedNote.style.display = 'none';
 
         wTemp.innerText = '28°';
         wDesc.innerText = '비 그치는 중 (기압 회복)';
@@ -1516,11 +1791,15 @@
 
         scienceBar.style.height = '68%';
         scienceBar.className = 'science-bar-fill';
-        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 빗방울 센서 빈도가 줄어들고 기압이 <strong>1009 hPa로 회복</strong> 중입니다. 10분 뒤 개일 예정.';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 외곽 거점 비 그침 확인 및 기압이 <strong>1009 hPa로 회복</strong> 중입니다. 10분 뒤 완전히 갤 예정.';
 
-        showToast('비 그침: 약 10분 뒤 완전히 갤 예정');
+        setFloodLevel('caution');
+        showToast('비 그침: 외곽 거점 비 멈춤 (약 10분 뒤 개일 예정)');
       }
     }
+
+    // 기본 초기 화면: 1차 준비 상태로 시작
+    applyMode('prep');
   </script>
 </body>
 
