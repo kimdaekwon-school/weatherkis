@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KIS 날씨비서 | 2026 호치민시한국국제학교 학생회</title>
+  <title>KIS 날씨비서 | 2026 호치민시한국국제학교</title>
 
   <!-- 🌤️ 브라우저 탭 파비콘 -->
   <link rel="icon"
@@ -13,7 +13,7 @@
   <!-- 🔗 카톡/SNS 링크 공유 미리보기 카드 (Open Graph) -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="호치민시한국국제학교 날씨비서">
-  <meta property="og:description" content="푸미흥 5대 센서망 연동 초단기 스콜 알리미">
+  <meta property="og:description" content="비가 학교에 오기 전에, 학교가 먼저 안다 | KIS 초단기 스콜 알리미">
   <meta property="og:image" content="kis_logo.png">
   <meta name="theme-color" content="#050A33">
 
@@ -663,19 +663,28 @@
 
     /* 노드별 고유 컬러 */
     .pin-node-a .pin-head {
-      background: #7B61FF; /* 스카이가든: 퍼플 */
+      background: #7B61FF;
+      /* 스카이가든: 퍼플 */
     }
+
     .pin-node-b .pin-head {
-      background: #00B140; /* 시닉밸리: 그린 */
+      background: #00B140;
+      /* 시닉밸리: 그린 */
     }
+
     .pin-node-c .pin-head {
-      background: #FF9800; /* KIS 정문: 오렌지 */
+      background: #FF9800;
+      /* KIS 정문: 오렌지 */
     }
+
     .pin-node-d .pin-head {
-      background: #418FDE; /* KIS 본관 4층: KIS 블루 */
+      background: #418FDE;
+      /* KIS 본관 4층: KIS 블루 */
     }
+
     .pin-node-e .pin-head {
-      background: #E056FD; /* 스카이라인 아파트: 핑크/마젠타 */
+      background: #E056FD;
+      /* 스카이라인 아파트: 핑크/마젠타 */
     }
 
     /* 🚨 비 감지/경보 시 펄스 애니메이션 */
@@ -946,7 +955,7 @@
       <div class="demo-buttons">
         <button class="demo-btn" id="btnSunny" onclick="applyMode('sunny')"><i class="fa-solid fa-sun"></i> 맑음</button>
         <button class="demo-btn active" id="btnWarning" onclick="applyMode('warning')"><i
-            class="fa-solid fa-clock-rotate-left"></i> 9분전 예보</button>
+            class="fa-solid fa-clock-rotate-left"></i> 7분전 예보</button>
         <button class="demo-btn" id="btnRain" onclick="applyMode('rain')"><i
             class="fa-solid fa-cloud-showers-heavy"></i> 비 내림</button>
         <button class="demo-btn" id="btnClear" onclick="applyMode('clear')"><i class="fa-solid fa-cloud-sun"></i> 비
@@ -989,14 +998,14 @@
             <i class="fa-solid fa-triangle-exclamation"></i>
             <span id="heroPillText">초단기 소나기 경보</span>
           </div>
-          <div class="hero-timer-box" id="heroTimer">09:00 남음</div>
+          <div class="hero-timer-box" id="heroTimer">06:48 남음</div>
         </div>
 
         <div class="hero-main-title" id="heroTitle">
-          스카이가든 & 시닉밸리 비 감지!<br>약 9분 뒤 KIS 본관에 소나기가 쏟아집니다.
+          시닉 밸리 & 스카이가든 비 감지!<br>약 6분 뒤 KIS 본관에 소나기가 쏟아집니다.
         </div>
         <div class="hero-main-desc" id="heroDesc">
-          외곽 3km 스카이가든 1차 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.
+          외곽 2km 시닉밸리 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.
         </div>
         <i class="fa-solid fa-cloud-showers-heavy hero-icon-bg" id="heroBgIcon"></i>
       </div>
@@ -1041,7 +1050,8 @@
             </div>
           </div>
           <div class="science-caption" id="scienceCaption">
-            <i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 소나기 구름 전면의 돌풍으로 <strong>단기 기압 변동폭(ΔP)</strong>이 급격히 요동치고 있습니다. 외곽 센서 감지 거리와 구름 이동 벡터 연산으로 도달 시간을 예측합니다.
+            <i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 소나기 구름 전면의 돌풍으로 <strong>단기 기압
+              변동폭(ΔP)</strong>이 급격히 요동치고 있습니다. 외곽 센서 감지 거리와 구름 이동 벡터 연산으로 도달 시간을 예측합니다.
           </div>
         </div>
       </div>
@@ -1121,8 +1131,9 @@
           <div class="feed-item">
             <div class="feed-meta">
               <div class="feed-author">
-                <span>김민서</span>
-                <span class="feed-author-tag" style="background: rgba(224, 86, 253, 0.15); color: #B53471;">스카이라인 거주</span>
+                <span>김대권</span>
+                <span class="feed-author-tag" style="background: rgba(224, 86, 253, 0.15); color: #B53471;">스카이라인
+                  거주</span>
               </div>
               <span class="feed-time">방금 전</span>
             </div>
@@ -1215,7 +1226,7 @@
       sensorC: [10.72250, 106.73170],
       // [Node D] KIS 본관 4층 (학교 상공 기압계 센서)
       sensorD: [10.72194, 106.73245],
-      // [Node E] 스카이라인 아파트 (학교 동남쪽 1.2km 예외 스콜 대비)
+      // [Node E] 스카이라인 아파트 (학교 동남쪽 2.5km 예외 스콜 대비)
       sensorE: [10.71559, 106.74101],
       // 관제 센터 중심점 (5개 거점 최적 밸런스 뷰)
       center: [10.7240, 106.7245]
@@ -1288,8 +1299,8 @@
     }).addTo(map).bindPopup('<b>📍 Node D: KIS 본관 4층</b><br>상공 기압계 센서<br>대기 불안정 지수(ΔP) 실시간 분석');
 
     let markerE = L.marker(COORDS.sensorE, {
-      icon: makeSensorPin('e', 'fa-shield-halved', '스카이라인 (동남 1.2km)', false)
-    }).addTo(map).bindPopup('<b>📍 Node E: 스카이라인 아파트</b><br>학교 동남쪽 1.2km 예외 스콜 대비 거점<br>동남풍/돌발 소나기 역방향 유입 조기 감지');
+      icon: makeSensorPin('e', 'fa-shield-halved', '스카이라인 (동남 2.5km)', false)
+    }).addTo(map).bindPopup('<b>📍 Node E: 스카이라인 아파트</b><br>학교 동남쪽 2.5km 예외 스콜 대비 거점<br>동남풍/돌발 소나기 역방향 유입 조기 감지');
 
     // 마커 업데이트 함수 (시연 모드와 연동)
     function updateMapMarkers(mode) {
@@ -1329,7 +1340,7 @@
     }
 
     /* ====== Timer Counter ====== */
-    let secondsLeft = 540; // 9m 00s
+    let secondsLeft = 408; // 6m 48s
     let timerId = null;
 
     function runTimer() {
@@ -1445,14 +1456,14 @@
 
       } else if (mode === 'warning') {
         document.getElementById('btnWarning').classList.add('active');
-        secondsLeft = 540;
+        secondsLeft = 410;
         runTimer();
 
         heroCard.style.background = '#050A33';
         heroPill.style.background = '#418FDE';
         heroPillText.innerText = '초단기 소나기 경보';
-        heroTitle.innerHTML = '스카이가든 & 시닉밸리 비 감지!<br>약 9분 뒤 KIS 본관에 소나기가 쏟아집니다.';
-        heroDesc.innerText = '외곽 3km 스카이가든 1차 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.';
+        heroTitle.innerHTML = '시닉 밸리 & 스카이가든 비 감지!<br>약 6분 뒤 KIS 본관에 소나기가 쏟아집니다.';
+        heroDesc.innerText = '외곽 2km 시닉밸리 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.';
         heroBgIcon.className = 'fa-solid fa-cloud-showers-heavy hero-icon-bg';
 
         wTemp.innerText = '32°';
@@ -1461,9 +1472,9 @@
 
         scienceBar.style.height = '35%';
         scienceBar.className = 'science-bar-fill drop';
-        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 스콜 전면부 돌풍으로 <strong>기압 변동폭(ΔP)</strong>이 급격히 증가했습니다. 이동 속도 연산(거리÷속도) 기준 약 9분 후 본관 도달이 예상됩니다.';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 스콜 전면부 돌풍으로 <strong>기압 변동폭(ΔP)</strong>이 급격히 증가했습니다. 이동 속도 연산(거리÷속도) 기준 약 6분 후 본관 도달이 예상됩니다.';
 
-        showToast('초단기 예보: 스카이가든 비 감지 & 기압 급변동 분석!');
+        showToast('초단기 예보: 시닉밸리 비 감지 & 기압 급변동 분석!');
 
       } else if (mode === 'rain') {
         document.getElementById('btnRain').classList.add('active');
