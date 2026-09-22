@@ -955,7 +955,7 @@
       <div class="demo-buttons">
         <button class="demo-btn" id="btnSunny" onclick="applyMode('sunny')"><i class="fa-solid fa-sun"></i> 맑음</button>
         <button class="demo-btn active" id="btnWarning" onclick="applyMode('warning')"><i
-            class="fa-solid fa-clock-rotate-left"></i> 7분전 예보</button>
+            class="fa-solid fa-clock-rotate-left"></i> 9분전 예보</button>
         <button class="demo-btn" id="btnRain" onclick="applyMode('rain')"><i
             class="fa-solid fa-cloud-showers-heavy"></i> 비 내림</button>
         <button class="demo-btn" id="btnClear" onclick="applyMode('clear')"><i class="fa-solid fa-cloud-sun"></i> 비
@@ -998,14 +998,14 @@
             <i class="fa-solid fa-triangle-exclamation"></i>
             <span id="heroPillText">초단기 소나기 경보</span>
           </div>
-          <div class="hero-timer-box" id="heroTimer">06:48 남음</div>
+          <div class="hero-timer-box" id="heroTimer">09:00 남음</div>
         </div>
 
         <div class="hero-main-title" id="heroTitle">
-          시닉 밸리 & 스카이가든 비 감지!<br>약 6분 뒤 KIS 본관에 소나기가 쏟아집니다.
+          스카이가든 & 시닉밸리 비 감지!<br>약 9분 뒤 KIS 본관에 소나기가 쏟아집니다.
         </div>
         <div class="hero-main-desc" id="heroDesc">
-          외곽 2km 시닉밸리 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.
+          외곽 3km 스카이가든 1차 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.
         </div>
         <i class="fa-solid fa-cloud-showers-heavy hero-icon-bg" id="heroBgIcon"></i>
       </div>
@@ -1340,7 +1340,7 @@
     }
 
     /* ====== Timer Counter ====== */
-    let secondsLeft = 408; // 6m 48s
+    let secondsLeft = 540; // 9m 00s
     let timerId = null;
 
     function runTimer() {
@@ -1456,14 +1456,14 @@
 
       } else if (mode === 'warning') {
         document.getElementById('btnWarning').classList.add('active');
-        secondsLeft = 410;
+        secondsLeft = 540;
         runTimer();
 
         heroCard.style.background = '#050A33';
         heroPill.style.background = '#418FDE';
         heroPillText.innerText = '초단기 소나기 경보';
-        heroTitle.innerHTML = '시닉 밸리 & 스카이가든 비 감지!<br>약 6분 뒤 KIS 본관에 소나기가 쏟아집니다.';
-        heroDesc.innerText = '외곽 2km 시닉밸리 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.';
+        heroTitle.innerHTML = '스카이가든 & 시닉밸리 비 감지!<br>약 9분 뒤 KIS 본관에 소나기가 쏟아집니다.';
+        heroDesc.innerText = '외곽 3km 스카이가든 1차 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.';
         heroBgIcon.className = 'fa-solid fa-cloud-showers-heavy hero-icon-bg';
 
         wTemp.innerText = '32°';
@@ -1472,9 +1472,9 @@
 
         scienceBar.style.height = '35%';
         scienceBar.className = 'science-bar-fill drop';
-        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 스콜 전면부 돌풍으로 <strong>기압 변동폭(ΔP)</strong>이 급격히 증가했습니다. 이동 속도 연산(거리÷속도) 기준 약 6분 후 본관 도달이 예상됩니다.';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 스콜 전면부 돌풍으로 <strong>기압 변동폭(ΔP)</strong>이 급격히 증가했습니다. 이동 속도 연산(거리÷속도) 기준 약 9분 후 본관 도달이 예상됩니다.';
 
-        showToast('초단기 예보: 시닉밸리 비 감지 & 기압 급변동 분석!');
+        showToast('초단기 예보: 스카이가든 비 감지 & 기압 급변동 분석!');
 
       } else if (mode === 'rain') {
         document.getElementById('btnRain').classList.add('active');
