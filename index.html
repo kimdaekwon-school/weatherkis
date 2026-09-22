@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KIS 날씨비서 | 2026 호치민시한국국제학교 학생회</title>
+
+  <!-- 🌤️ 브라우저 탭 파비콘 -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌤️</text></svg>">
+
+  <!-- 🔗 카톡/SNS 링크 공유 미리보기 카드 (Open Graph) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="호치민시한국국제학교 날씨비서">
+  <meta property="og:description" content="푸미흥 미드타운 & 캠퍼스 센서 연동 7분 전 초단기 스콜 알리미">
+  <meta property="og:image" content="kis_logo.png">
+  <meta name="theme-color" content="#050A33">
+
+  <!-- Pretendard & FontAwesome & Leaflet -->
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    /* 2026 KISSC 학생회 공식 컬러 가이드 100% 적용 */
+    :root {
+      --primary-navy: #050A33;
+      --secondary-black: #1A1A1B;
+      --accent-green: #00B140;
+      --accent-mint: #49C5B1;
+      --accent-blue: #418FDE;
+      --bg-white: #FFFFFF;
+      --bg-soft: #F4F6FA;
+      --text-main: #191F28;
+      --text-sub: #6B7684;
+      --text-muted: #8B95A1;
+      --border-light: #E5E8EB;
+      --card-shadow: 0 4px 20px rgba(5, 10, 51, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #E9ECF2;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px 10px;
+    }
+
+    /* Mobile Phone Shell (토스/애플 앱 스타일) */
+    .app-frame {
+      width: 100%;
+      max-width: 420px;
+      height: 92vh;
+      max-height: 880px;
+      background: var(--bg-soft);
+      border-radius: 36px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 60px -15px rgba(5, 10, 51, 0.2), 0 0 0 1px rgba(5, 10, 51, 0.08);
+      position: relative;
+    }
+
+    /* 🎮 Presentation Demo Bar (학생회 발표 데모 모드) */
+    .demo-bar {
+      background: var(--primary-navy);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      font-size: 11px;
+      z-index: 20;
+    }
+
+    .demo-title {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent-mint);
+    }
+
+    .demo-buttons {
+      display: flex;
+      gap: 4px;
+    }
+
+    .demo-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .demo-btn.active {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    /* Top Navigation */
+    .app-header {
+      background: var(--bg-white);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .kis-logo {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .header-text-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      line-height: 1.2;
+    }
+
+    .header-text-sub {
+      font-size: 11px;
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .share-link-btn {
+      background: rgba(65, 143, 222, 0.08);
+      border: 1px solid rgba(65, 143, 222, 0.25);
+      color: var(--accent-blue);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .share-link-btn:hover {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+
+    .sensor-live-pill {
+      background: rgba(0, 177, 64, 0.1);
+      border: 1px solid rgba(0, 177, 64, 0.25);
+      color: var(--accent-green);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: transform 0.15s ease;
+    }
+
+    .sensor-live-pill:active {
+      transform: scale(0.94);
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: pulseGreen 1.5s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0% {
+        transform: scale(0.9);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.4);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: scale(0.9);
+        opacity: 1;
+      }
+    }
+
+    /* Scrollable App Body */
+    .app-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 18px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .app-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* 🚨 Toss-style Early Warning Card */
+    .hero-warning-card {
+      background: var(--primary-navy);
+      color: #fff;
+      border-radius: 24px;
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(5, 10, 51, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .hero-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .hero-pill {
+      background: var(--accent-blue);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .hero-timer-box {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--accent-mint);
+      font-size: 16px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hero-main-title {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+
+    .hero-main-desc {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.4;
+    }
+
+    .hero-icon-bg {
+      position: absolute;
+      right: -10px;
+      bottom: -15px;
+      font-size: 110px;
+      color: rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+    }
+
+    /* White Cards Base */
+    .content-card {
+      background: var(--bg-white);
+      border-radius: 22px;
+      padding: 18px 18px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border-light);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .card-title-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-title-left i {
+      color: var(--accent-blue);
+    }
+
+    /* Current School Weather Row */
+    .school-weather-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .weather-left-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .weather-place {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .weather-degrees {
+      font-size: 38px;
+      font-weight: 900;
+      color: var(--primary-navy);
+      line-height: 1.1;
+      margin: 2px 0;
+    }
+
+    .weather-summary-tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+
+    .weather-right-icon {
+      font-size: 44px;
+      color: #FFA502;
+    }
+
+    /* Simple & Honest Sensor Proof (과학적 원리) */
+    .science-box {
+      background: var(--bg-soft);
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 10px;
+    }
+
+    .science-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .science-bar-container {
+      display: flex;
+      align-items: flex-end;
+      height: 48px;
+      gap: 12px;
+      padding: 0 10px;
+    }
+
+    .science-bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .science-bar-fill {
+      width: 100%;
+      background: var(--accent-blue);
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .science-bar-fill.drop {
+      background: #FF4757;
+    }
+
+    .science-bar-time {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .science-caption {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    /* Student Golden Time Checklist (Toss Style) */
+    .checklist-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .check-item {
+      background: var(--bg-soft);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .check-item:hover {
+      background: #EEF2F8;
+    }
+
+    .check-item.done {
+      background: #F0FAF3;
+      border-color: rgba(0, 177, 64, 0.2);
+    }
+
+    .check-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .check-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transition: all 0.2s ease;
+    }
+
+    .check-icon-box.icon-laundry {
+      background: rgba(65, 143, 222, 0.1);
+      color: var(--accent-blue);
+      border: 1px solid rgba(65, 143, 222, 0.2);
+    }
+
+    .check-icon-box.icon-bike {
+      background: rgba(73, 197, 177, 0.15);
+      color: var(--primary-navy);
+      border: 1px solid rgba(73, 197, 177, 0.3);
+    }
+
+    .check-icon-box.icon-window {
+      background: rgba(0, 177, 64, 0.1);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 177, 64, 0.2);
+    }
+
+    .check-text-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .check-item.done .check-text-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .check-text-sub {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .check-circle-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--border-light);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: transparent;
+      transition: all 0.2s ease;
+    }
+
+    .check-item.done .check-circle-btn {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+      color: #fff;
+    }
+
+    /* 💬 KIS Student Real-time Board (에타/학생회 감성) */
+    .feed-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .feed-item {
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 9px;
+    }
+
+    .feed-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .feed-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+
+    .feed-author {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .feed-author-tag {
+      background: rgba(65, 143, 222, 0.12);
+      color: var(--accent-blue);
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .feed-time {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .feed-content {
+      font-size: 12px;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+
+    /* Campus Real Map (Leaflet.js 실제 지도) */
+    .map-wrapper {
+      width: 100%;
+      height: 220px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    #leaflet-map {
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Leaflet 기본 아이콘 테두리 제거 */
+    .custom-pin-wrapper {
+      background: none !important;
+      border: none !important;
+    }
+
+    /* 💎 세련된 애플/토스 스타일 지도 센서 핀 */
+    .custom-sensor-pin {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transform: translate(-50%, -100%);
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .custom-sensor-pin:hover {
+      transform: translate(-50%, -108%) scale(1.08);
+      z-index: 1000 !important;
+    }
+
+    /* 말풍선 라벨 칩 */
+    .pin-bubble {
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--primary-navy);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(5, 10, 51, 0.18), 0 0 0 1px rgba(5, 10, 51, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      backdrop-filter: blur(8px);
+      margin-bottom: 4px;
+      letter-spacing: -0.2px;
+    }
+
+    .pin-bubble i {
+      font-size: 10px;
+    }
+
+    /* 핀 둥근 헤드 */
+    .pin-head {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-navy);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(5, 10, 51, 0.3);
+      position: relative;
+      border: 2.5px solid #fff;
+    }
+
+    /* 핀 꼬리 */
+    .pin-head::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid #fff;
+    }
+
+    /* 노드별 고유 컬러 */
+    .pin-node-a .pin-head {
+      background: #7B61FF; /* 스카이가든: 퍼플 */
+    }
+    .pin-node-b .pin-head {
+      background: #00B140; /* 시닉밸리: 그린 */
+    }
+    .pin-node-c .pin-head {
+      background: #FF9800; /* KIS 정문: 오렌지 */
+    }
+    .pin-node-d .pin-head {
+      background: #418FDE; /* KIS 본관 4층: KIS 블루 */
+    }
+    .pin-node-e .pin-head {
+      background: #E056FD; /* 스카이라인 아파트: 핑크/마젠타 */
+    }
+
+    /* 🚨 비 감지/경보 시 펄스 애니메이션 */
+    .custom-sensor-pin.alert-pin .pin-bubble {
+      background: #FF4757;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(255, 71, 87, 0.4);
+    }
+
+    .custom-sensor-pin.alert-pin .pin-head {
+      background: #FF4757 !important;
+      animation: pinBounce 1.2s infinite;
+    }
+
+    .custom-sensor-pin.alert-pin::before {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 71, 87, 0.5);
+      animation: radarWave 1.6s infinite;
+      z-index: -1;
+    }
+
+    @keyframes radarWave {
+      0% {
+        transform: scale(0.6);
+        opacity: 0.9;
+      }
+
+      100% {
+        transform: scale(2.6);
+        opacity: 0;
+      }
+    }
+
+    @keyframes pinBounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+
+    /* 7-District HCMC Road Notice */
+    .hcmc-flood-card {
+      background: rgba(73, 197, 177, 0.12);
+      border: 1px solid rgba(73, 197, 177, 0.3);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flood-bell {
+      font-size: 18px;
+      color: var(--primary-navy);
+    }
+
+    .flood-text {
+      font-size: 11px;
+      color: var(--primary-navy);
+      line-height: 1.35;
+    }
+
+    /* Bottom Action Bar (우산 구함 / 제보하기) */
+    .bottom-cta-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .cta-btn {
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .cta-btn-primary {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+
+    .cta-btn-primary:hover {
+      background: #2b7bc9;
+    }
+
+    .cta-btn-sub {
+      background: #fff;
+      color: var(--primary-navy);
+      border: 1px solid var(--border-light);
+    }
+
+    .cta-btn-sub:hover {
+      background: var(--bg-soft);
+    }
+
+    /* Toast */
+    .toast-popup {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--primary-navy);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(5, 10, 51, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    .toast-popup.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* 📱 모바일 기본 vs 🖥️ 데스크탑(1920x1080) 반응형 레이아웃 */
+    .dashboard-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .dash-col {
+      display: contents;
+    }
+
+    .desktop-only-badge {
+      display: none;
+    }
+
+    /* 🖥️ PC / 모니터 (1920x1080 와이드 관제 센터 모드) */
+    @media (min-width: 1024px) {
+      body {
+        padding: 30px;
+        background: #0B1124;
+      }
+
+      .app-frame {
+        max-width: 1480px;
+        width: 95vw;
+        height: 92vh;
+        max-height: 960px;
+        border-radius: 28px;
+        box-shadow: 0 35px 90px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      }
+
+      .demo-bar {
+        padding: 12px 28px;
+        font-size: 12px;
+      }
+
+      .demo-btn {
+        font-size: 11px;
+        padding: 6px 14px;
+        border-radius: 8px;
+      }
+
+      .app-header {
+        padding: 16px 28px;
+      }
+
+      .header-text-title {
+        font-size: 18px;
+      }
+
+      .header-text-sub {
+        font-size: 13px;
+      }
+
+      .desktop-only-badge {
+        display: inline-flex !important;
+        background: rgba(65, 143, 222, 0.12);
+        color: var(--accent-blue);
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(65, 143, 222, 0.25);
+        align-items: center;
+        gap: 6px;
+      }
+
+      .app-scroll {
+        padding: 24px 28px;
+        overflow-y: auto;
+        display: grid;
+        grid-template-columns: 1.05fr 1.25fr 1fr;
+        grid-template-areas:
+          "warning   map       checklist"
+          "weather   flood     feed"
+          "weather   cta       feed";
+        gap: 22px;
+        align-items: start;
+      }
+
+      #heroCard {
+        grid-area: warning;
+        padding: 24px;
+      }
+
+      #weatherCard {
+        grid-area: weather;
+      }
+
+      #mapCard {
+        grid-area: map;
+      }
+
+      #floodCard {
+        grid-area: flood;
+      }
+
+      #ctaRow {
+        grid-area: cta;
+      }
+
+      #checkCard {
+        grid-area: checklist;
+      }
+
+      #feedCard {
+        grid-area: feed;
+      }
+
+      .map-wrapper {
+        height: 320px;
+      }
+
+      .hero-main-title {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-frame">
+
+    <!-- 🎮 KISSC 해커톤 발표용 시뮬레이터 바 (단정하고 프로페셔널하게 정돈) -->
+    <div class="demo-bar">
+      <div class="demo-title">
+        <i class="fa-solid fa-chalkboard-user"></i> KISSC 시연 모드
+      </div>
+      <div class="demo-buttons">
+        <button class="demo-btn" id="btnSunny" onclick="applyMode('sunny')"><i class="fa-solid fa-sun"></i> 맑음</button>
+        <button class="demo-btn active" id="btnWarning" onclick="applyMode('warning')"><i
+            class="fa-solid fa-clock-rotate-left"></i> 7분전 예보</button>
+        <button class="demo-btn" id="btnRain" onclick="applyMode('rain')"><i
+            class="fa-solid fa-cloud-showers-heavy"></i> 비 내림</button>
+        <button class="demo-btn" id="btnClear" onclick="applyMode('clear')"><i class="fa-solid fa-cloud-sun"></i> 비
+          그침</button>
+      </div>
+    </div>
+
+    <!-- App Header (2026 KISSC Brand Identity) -->
+    <header class="app-header">
+      <div class="header-left">
+        <img src="kis_logo.png" alt="KIS Logo" class="kis-logo">
+        <div>
+          <div class="header-text-title">호치민시한국국제학교</div>
+          <div class="header-text-sub">2026 KISSC 학생회 날씨비서</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="share-link-btn" onclick="copyShareLink()" title="모바일 접속 및 시연 링크 복사">
+          <i class="fa-solid fa-share-nodes"></i>
+          <span>링크 복사</span>
+        </button>
+        <div class="desktop-only-badge">
+          <i class="fa-solid fa-display"></i>
+          <span>캠퍼스 관제 센터 (1080p)</span>
+        </div>
+        <div class="sensor-live-pill" onclick="syncSensors()" title="센서 데이터 강제 동기화" style="cursor: pointer;">
+          <div class="live-dot"></div>
+          <span>옥상 센서 연동</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scrollable Content -->
+    <div class="app-scroll">
+
+      <!-- 🚨 Early Warning Hero Card (토스 감성의 깔끔하고 강력한 경보) -->
+      <div class="hero-warning-card" id="heroCard">
+        <div class="hero-badge-row">
+          <div class="hero-pill" id="heroPill">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="heroPillText">초단기 소나기 경보</span>
+          </div>
+          <div class="hero-timer-box" id="heroTimer">06:48 남음</div>
+        </div>
+
+        <div class="hero-main-title" id="heroTitle">
+          시닉 밸리 & 스카이가든 비 감지!<br>약 6분 뒤 KIS 본관에 소나기가 쏟아집니다.
+        </div>
+        <div class="hero-main-desc" id="heroDesc">
+          외곽 2km 시닉밸리 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.
+        </div>
+        <i class="fa-solid fa-cloud-showers-heavy hero-icon-bg" id="heroBgIcon"></i>
+      </div>
+
+      <!-- KIS Campus Weather Overview -->
+      <div class="content-card" id="weatherCard">
+        <div class="school-weather-row">
+          <div class="weather-left-info">
+            <div class="weather-place">
+              <i class="fa-solid fa-location-dot" style="color: var(--accent-blue);"></i> 호치민 7군 KIS 캠퍼스
+            </div>
+            <div class="weather-degrees" id="wTemp">32°</div>
+            <div class="weather-summary-tag" id="wDesc">먹구름 급접근 중 (습도 88%)</div>
+          </div>
+          <div class="weather-right-icon" id="wIcon">
+            <i class="fa-solid fa-cloud-bolt"></i>
+          </div>
+        </div>
+
+        <!-- 과학적 원리 설명: 기압 급변동 분석 그래프 -->
+        <div class="science-box">
+          <div class="science-header">
+            <i class="fa-solid fa-chart-line" style="color: var(--accent-blue);"></i>
+            <span>대기 불안정 분석: 왜 비가 올 것을 알 수 있을까요?</span>
+          </div>
+          <div class="science-bar-container">
+            <div class="science-bar-col">
+              <div class="science-bar-fill" style="height: 75%;"></div>
+              <div class="science-bar-time">30분전</div>
+            </div>
+            <div class="science-bar-col">
+              <div class="science-bar-fill" style="height: 78%;"></div>
+              <div class="science-bar-time">20분전</div>
+            </div>
+            <div class="science-bar-col">
+              <div class="science-bar-fill" style="height: 65%;"></div>
+              <div class="science-bar-time">10분전</div>
+            </div>
+            <div class="science-bar-col">
+              <div class="science-bar-fill drop" id="scienceCurrentBar" style="height: 92%;"></div>
+              <div class="science-bar-time" style="color: #FF4757; font-weight: 800;">현재(급변)</div>
+            </div>
+          </div>
+          <div class="science-caption" id="scienceCaption">
+            <i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 소나기 구름 전면의 돌풍으로 <strong>단기 기압 변동폭(ΔP)</strong>이 급격히 요동치고 있습니다. 외곽 센서 감지 거리와 구름 이동 벡터 연산으로 도달 시간을 예측합니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- KIS Student Golden-Time Checklist -->
+      <div class="content-card" id="checkCard">
+        <div class="card-title">
+          <div class="card-title-left">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>비 오기 전 학생 골든타임 수칙</span>
+          </div>
+          <span style="font-size: 11px; color: var(--accent-green); font-weight: 700;" id="checkCount">0/3 완료</span>
+        </div>
+
+        <div class="checklist-container">
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-left">
+              <div class="check-icon-box icon-laundry"><i class="fa-solid fa-shirt"></i></div>
+              <div>
+                <div class="check-text-title">기숙사 베란다 빨래 걷기</div>
+                <div class="check-text-sub">스콜성 폭우로 빨래 젖음 방지</div>
+              </div>
+            </div>
+            <div class="check-circle-btn"><i class="fa-solid fa-check"></i></div>
+          </div>
+
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-left">
+              <div class="check-icon-box icon-bike"><i class="fa-solid fa-motorcycle"></i></div>
+              <div>
+                <div class="check-text-title">오토바이/자전거 비옷 챙기기</div>
+                <div class="check-text-sub">하교 시 시동 및 안장 침수 대비</div>
+              </div>
+            </div>
+            <div class="check-circle-btn"><i class="fa-solid fa-check"></i></div>
+          </div>
+
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-left">
+              <div class="check-icon-box icon-window"><i class="fa-solid fa-table-cells-large"></i></div>
+              <div>
+                <div class="check-text-title">교실 & 4층 복도 창문 닫기</div>
+                <div class="check-text-sub">돌풍으로 빗물 들이침 예방</div>
+              </div>
+            </div>
+            <div class="check-circle-btn"><i class="fa-solid fa-check"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campus Real Leaflet Map -->
+      <div class="content-card" id="mapCard">
+        <div class="card-title">
+          <div class="card-title-left">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <span>캠퍼스 & 푸미흥 센서 네트워크</span>
+          </div>
+          <span style="font-size: 11px; color: var(--accent-blue); font-weight: 700;">🗺️ 5대 노드 연동 (동남쪽 예외 대비)</span>
+        </div>
+
+        <div class="map-wrapper">
+          <div id="leaflet-map"></div>
+        </div>
+      </div>
+
+      <!-- 💬 Real KIS Student Talk (생생한 학생 에타 감성) -->
+      <div class="content-card" id="feedCard">
+        <div class="card-title">
+          <div class="card-title-left">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>실시간 KIS 학생 날씨 톡</span>
+          </div>
+          <span style="font-size: 11px; color: var(--accent-blue); font-weight: 700;">방금 업데이트</span>
+        </div>
+
+        <div class="feed-container">
+          <div class="feed-item">
+            <div class="feed-meta">
+              <div class="feed-author">
+                <span>김민서</span>
+                <span class="feed-author-tag" style="background: rgba(224, 86, 253, 0.15); color: #B53471;">스카이라인 거주</span>
+              </div>
+              <span class="feed-time">방금 전</span>
+            </div>
+            <div class="feed-content">
+              스카이라인 쪽 하늘도 살짝 어두워졌는데 Node E 센서는 아직 맑음이네요! 동남쪽 방향은 이상 없습니다 👍
+            </div>
+          </div>
+
+          <div class="feed-item">
+            <div class="feed-meta">
+              <div class="feed-author">
+                <span>박시아</span>
+                <span class="feed-author-tag">시닉밸리 거주</span>
+              </div>
+              <span class="feed-time">1분 전</span>
+            </div>
+            <div class="feed-content">
+              시닉밸리 사는데 방금 저희 동 베란다 센서에 빗방울 감지 알림 떴어요! KIS에 계신 분들 빨래 걷으세요 ㄷㄷ
+            </div>
+          </div>
+
+          <div class="feed-item">
+            <div class="feed-meta">
+              <div class="feed-author">
+                <span>박준기</span>
+                <span class="feed-author-tag">스카이가든 거주</span>
+              </div>
+              <span class="feed-time">3분 전</span>
+            </div>
+            <div class="feed-content">
+              스카이가든 1차 센서 알림 뜨자마자 체육 쌤이 강당으로 들어오라고 방송하셨어요! 센서 속도 미쳤네 ㄷㄷ
+            </div>
+          </div>
+
+          <div class="feed-item">
+            <div class="feed-meta">
+              <div class="feed-author">
+                <span>정구윤</span>
+                <span class="feed-author-tag">학생회</span>
+              </div>
+              <span class="feed-time">5분 전</span>
+            </div>
+            <div class="feed-content">
+              본관 1층 로비에 학생회 공유 우산 20개 비치해뒀으니 필요하신 분 쓰세요! <i class="fa-solid fa-umbrella"
+                style="color: var(--accent-blue);"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7군 상습 도로 침수 안내 -->
+      <div class="hcmc-flood-card" id="floodCard">
+        <i class="fa-solid fa-triangle-exclamation flood-bell"></i>
+        <div class="flood-text">
+          <strong>호치민 7군 하교길 도로 안내:</strong><br>
+          Nguyễn Thị Thập 삼거리 상습 침수 구역입니다. 폭우 시작 시 안전한 우회로를 이용하세요.
+        </div>
+      </div>
+
+      <!-- Bottom Quick Actions -->
+      <div class="bottom-cta-row" id="ctaRow">
+        <button class="cta-btn cta-btn-primary" onclick="showToast('☂️ 학생회 우산 대여 신청이 접수되었습니다!')">
+          <i class="fa-solid fa-umbrella"></i> 우산 대여 신청
+        </button>
+        <button class="cta-btn cta-btn-sub" onclick="showToast('📢 날씨 제보가 등록되었습니다!')">
+          <i class="fa-solid fa-bullhorn"></i> 실시간 제보하기
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Toast Popup -->
+    <div class="toast-popup" id="toastBox">
+      <i class="fa-solid fa-bell" style="color: var(--accent-mint);"></i>
+      <span id="toastText">알림 내용</span>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    /* ====== Leaflet 실제 지도 초기화 ====== */
+    /* ====== 📍 실제 구글 지도 GPS 좌표 ====== */
+    const COORDS = {
+      // [Node A] 푸미흥 스카이가든 1차 (서쪽 3.0km 1차 조기경보)
+      sensorA: [10.72928, 106.70605],
+      // [Node B] 푸미흥 시닉 밸리 (서쪽 2.0km 2차 긴급경보)
+      sensorB: [10.73109, 106.71657],
+      // [Node C] KIS 정문 게이트 (학교 진입로 & 도로 수위 감지)
+      sensorC: [10.72250, 106.73170],
+      // [Node D] KIS 본관 4층 (학교 상공 기압계 센서)
+      sensorD: [10.72194, 106.73245],
+      // [Node E] 스카이라인 아파트 (학교 동남쪽 1.2km 예외 스콜 대비)
+      sensorE: [10.71559, 106.74101],
+      // 관제 센터 중심점 (5개 거점 최적 밸런스 뷰)
+      center: [10.7240, 106.7245]
+    };
+
+    // 💎 세련된 애플/토스 스타일 마커 생성기
+    function makeSensorPin(nodeType, iconClass, labelText, isAlert) {
+      return L.divIcon({
+        className: 'custom-pin-wrapper',
+        html: `
+          <div class="custom-sensor-pin pin-node-${nodeType} ${isAlert ? 'alert-pin' : ''}">
+            <div class="pin-bubble">
+              <i class="fa-solid ${iconClass}"></i>
+              <span>${labelText}</span>
+            </div>
+            <div class="pin-head">
+              <i class="fa-solid ${iconClass}"></i>
+            </div>
+          </div>
+        `,
+        iconAnchor: [0, 0],
+        popupAnchor: [0, -45]
+      });
+    }
+
+    const map = L.map('leaflet-map', {
+      center: COORDS.center,
+      zoom: 14,
+      zoomControl: true,
+      attributionControl: false
+    });
+
+    // 🗺️ 구글 지도 공식 타일 (진짜 구글 지도)
+    L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      attribution: '© Google Maps'
+    }).addTo(map);
+
+    // 🌀 주 비구름 이동 경로 선 (스카이가든 ➡️ 시닉밸리 ➡️ KIS 서풍 축선)
+    const cloudPath = L.polyline([COORDS.sensorA, COORDS.sensorB, COORDS.sensorC, COORDS.sensorD], {
+      color: '#418FDE',
+      weight: 3.5,
+      dashArray: '6, 8',
+      opacity: 0.8
+    }).addTo(map);
+
+    // 🛡️ 예외 비구름 대비 경로 선 (스카이라인 ➡️ KIS 동남풍 예외 축선)
+    const exceptionPath = L.polyline([COORDS.sensorE, COORDS.sensorC], {
+      color: '#E056FD',
+      weight: 3,
+      dashArray: '4, 6',
+      opacity: 0.7
+    }).addTo(map);
+
+    // 센서 마커 생성 (5개 노드)
+    let markerA = L.marker(COORDS.sensorA, {
+      icon: makeSensorPin('a', 'fa-city', '스카이가든 (외곽 3km)', false)
+    }).addTo(map).bindPopup('<b>📍 Node A: 푸미흥 스카이가든</b><br>학교 서쪽 3.0km 1차 조기경보 거점<br>빗방울 감지 센서 설치');
+
+    let markerB = L.marker(COORDS.sensorB, {
+      icon: makeSensorPin('b', 'fa-building-shield', '시닉 밸리 (중간 2km)', true)
+    }).addTo(map).bindPopup('<b>📍 Node B: 푸미흥 시닉 밸리</b><br>학교 서쪽 2.0km 2차 긴급경보 거점<br>강우 감지 ➡️ 학교 6분 전 예보 발령!');
+
+    let markerC = L.marker(COORDS.sensorC, {
+      icon: makeSensorPin('c', 'fa-door-open', 'KIS 정문 게이트', false)
+    }).addTo(map).bindPopup('<b>📍 Node C: 학교 정문 게이트</b><br>강우 도달 및 Tân Phú 도로 수위 감지');
+
+    let markerD = L.marker(COORDS.sensorD, {
+      icon: makeSensorPin('d', 'fa-gauge-high', '본관 4층 (기압 분석)', true)
+    }).addTo(map).bindPopup('<b>📍 Node D: KIS 본관 4층</b><br>상공 기압계 센서<br>대기 불안정 지수(ΔP) 실시간 분석');
+
+    let markerE = L.marker(COORDS.sensorE, {
+      icon: makeSensorPin('e', 'fa-shield-halved', '스카이라인 (동남 1.2km)', false)
+    }).addTo(map).bindPopup('<b>📍 Node E: 스카이라인 아파트</b><br>학교 동남쪽 1.2km 예외 스콜 대비 거점<br>동남풍/돌발 소나기 역방향 유입 조기 감지');
+
+    // 마커 업데이트 함수 (시연 모드와 연동)
+    function updateMapMarkers(mode) {
+      if (mode === 'sunny') {
+        markerA.setIcon(makeSensorPin('a', 'fa-city', 'Node A: 스카이가든 (정상)', false));
+        markerB.setIcon(makeSensorPin('b', 'fa-building-shield', 'Node B: 시닉밸리 (정상)', false));
+        markerC.setIcon(makeSensorPin('c', 'fa-door-open', 'Node C: KIS 정문 (정상)', false));
+        markerD.setIcon(makeSensorPin('d', 'fa-gauge-high', 'Node D: 본관 4층 (정상)', false));
+        markerE.setIcon(makeSensorPin('e', 'fa-shield-halved', 'Node E: 스카이라인 (정상)', false));
+        cloudPath.setStyle({ opacity: 0.15, color: '#00B140' });
+        exceptionPath.setStyle({ opacity: 0.15, color: '#00B140' });
+      } else if (mode === 'warning') {
+        markerA.setIcon(makeSensorPin('a', 'fa-cloud-rain', 'Node A: 스카이가든 (비 감지)', true));
+        markerB.setIcon(makeSensorPin('b', 'fa-cloud-rain', 'Node B: 시닉밸리 (비 감지!)', true));
+        markerC.setIcon(makeSensorPin('c', 'fa-door-open', 'Node C: KIS 정문 (대기)', false));
+        markerD.setIcon(makeSensorPin('d', 'fa-triangle-exclamation', 'Node D: 기압 급변!', true));
+        markerE.setIcon(makeSensorPin('e', 'fa-shield-halved', 'Node E: 스카이라인 (경계)', false));
+        cloudPath.setStyle({ opacity: 0.85, color: '#FF4757' });
+        exceptionPath.setStyle({ opacity: 0.4, color: '#E056FD' });
+      } else if (mode === 'rain') {
+        markerA.setIcon(makeSensorPin('a', 'fa-cloud-showers-heavy', 'Node A: 폭우 중', true));
+        markerB.setIcon(makeSensorPin('b', 'fa-cloud-showers-heavy', 'Node B: 폭우 중', true));
+        markerC.setIcon(makeSensorPin('c', 'fa-water', 'Node C: 침수 주의!', true));
+        markerD.setIcon(makeSensorPin('d', 'fa-cloud-showers-heavy', 'Node D: 본관 폭우', true));
+        markerE.setIcon(makeSensorPin('e', 'fa-cloud-showers-heavy', 'Node E: 비 감지', true));
+        cloudPath.setStyle({ opacity: 0.9, color: '#49C5B1' });
+        exceptionPath.setStyle({ opacity: 0.8, color: '#49C5B1' });
+      } else if (mode === 'clear') {
+        markerA.setIcon(makeSensorPin('a', 'fa-sun', 'Node A: 비 그침', false));
+        markerB.setIcon(makeSensorPin('b', 'fa-sun', 'Node B: 비 그침', false));
+        markerC.setIcon(makeSensorPin('c', 'fa-check', 'Node C: 빗줄기 약화', false));
+        markerD.setIcon(makeSensorPin('d', 'fa-sun', 'Node D: 기압 회복', false));
+        markerE.setIcon(makeSensorPin('e', 'fa-sun', 'Node E: 비 그침', false));
+        cloudPath.setStyle({ opacity: 0.2, color: '#49C5B1' });
+        exceptionPath.setStyle({ opacity: 0.2, color: '#49C5B1' });
+      }
+    }
+
+    /* ====== Timer Counter ====== */
+    let secondsLeft = 408; // 6m 48s
+    let timerId = null;
+
+    function runTimer() {
+      if (timerId) clearInterval(timerId);
+      timerId = setInterval(() => {
+        if (secondsLeft > 0) {
+          secondsLeft--;
+          const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+          const s = String(secondsLeft % 60).padStart(2, '0');
+          const box = document.getElementById('heroTimer');
+          if (box) box.innerText = `${m}:${s} 남음`;
+        } else {
+          applyMode('rain');
+        }
+      }, 1000);
+    }
+    runTimer();
+
+    /* Checklist Toggle */
+    function toggleCheck(el) {
+      el.classList.toggle('done');
+      const all = document.querySelectorAll('.check-item');
+      const checked = document.querySelectorAll('.check-item.done');
+      document.getElementById('checkCount').innerText = `${checked.length}/${all.length} 완료`;
+      if (el.classList.contains('done')) {
+        showToast('골든타임 수칙 체크 완료! 👏');
+      }
+    }
+
+    /* Toast */
+    let toastTimer;
+    function showToast(msg) {
+      const toast = document.getElementById('toastBox');
+      document.getElementById('toastText').innerText = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2400);
+    }
+
+    /* 🔗 링크 복사 (발표 시연 및 모바일 접속용) */
+    function copyShareLink() {
+      const url = window.location.href;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('🔗 시연 링크가 복사되었습니다! 모바일 브라우저에 붙여넣으세요.');
+        }).catch(() => {
+          fallbackCopy(url);
+        });
+      } else {
+        fallbackCopy(url);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const input = document.createElement('input');
+      input.value = text;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      showToast('🔗 시연 링크가 복사되었습니다!');
+    }
+
+    /* 📡 센서 수동 동기화 연출 */
+    function syncSensors() {
+      showToast('📡 IoT 노드 5기 패킷 수신: 스카이가든, 시닉밸리, 스카이라인, 정문, 본관 정상 (21ms)');
+    }
+
+    /* 🎮 발표 시연 모드 컨트롤러 (2026 KISSC 컬러 반영) */
+    function applyMode(mode) {
+      document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'));
+
+      const heroCard = document.getElementById('heroCard');
+      const heroPill = document.getElementById('heroPill');
+      const heroPillText = document.getElementById('heroPillText');
+      const heroTimer = document.getElementById('heroTimer');
+      const heroTitle = document.getElementById('heroTitle');
+      const heroDesc = document.getElementById('heroDesc');
+      const heroBgIcon = document.getElementById('heroBgIcon');
+
+      const wTemp = document.getElementById('wTemp');
+      const wDesc = document.getElementById('wDesc');
+      const wIcon = document.getElementById('wIcon');
+
+      const scienceBar = document.getElementById('scienceCurrentBar');
+      const scienceCaption = document.getElementById('scienceCaption');
+
+      updateMapMarkers(mode);
+
+      if (mode === 'sunny') {
+        document.getElementById('btnSunny').classList.add('active');
+        clearInterval(timerId);
+
+        heroCard.style.background = '#050A33';
+        heroPill.style.background = '#00B140';
+        heroPillText.innerText = '날씨 평온';
+        heroTimer.innerText = '맑음 (안정)';
+        heroTitle.innerHTML = '현재 KIS 상공은 맑습니다.<br>비구름 접근 징후가 없습니다.';
+        heroDesc.innerText = '체육 수업 및 야외 활동을 하기에 아주 좋은 날씨입니다.';
+        heroBgIcon.className = 'fa-solid fa-sun hero-icon-bg';
+
+        wTemp.innerText = '34°';
+        wDesc.innerText = '맑고 쾌적함 (습도 56%)';
+        wIcon.innerHTML = '<i class="fa-solid fa-sun" style="color: #FFA502;"></i>';
+
+        scienceBar.style.height = '88%';
+        scienceBar.className = 'science-bar-fill';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 현재 대기압 <strong>1013 hPa (정상)</strong>으로 기압이 안정되어 있습니다.';
+
+        showToast('맑음 모드: 호치민 평온한 날씨');
+
+      } else if (mode === 'warning') {
+        document.getElementById('btnWarning').classList.add('active');
+        secondsLeft = 410;
+        runTimer();
+
+        heroCard.style.background = '#050A33';
+        heroPill.style.background = '#418FDE';
+        heroPillText.innerText = '초단기 소나기 경보';
+        heroTitle.innerHTML = '시닉 밸리 & 스카이가든 비 감지!<br>약 6분 뒤 KIS 본관에 소나기가 쏟아집니다.';
+        heroDesc.innerText = '외곽 2km 시닉밸리 거점 강우 시작. 기숙사 빨래를 걷고 교실 창문을 닫으세요.';
+        heroBgIcon.className = 'fa-solid fa-cloud-showers-heavy hero-icon-bg';
+
+        wTemp.innerText = '32°';
+        wDesc.innerText = '먹구름 급접근 중 (습도 88%)';
+        wIcon.innerHTML = '<i class="fa-solid fa-cloud-bolt" style="color: #418FDE;"></i>';
+
+        scienceBar.style.height = '35%';
+        scienceBar.className = 'science-bar-fill drop';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 스콜 전면부 돌풍으로 <strong>기압 변동폭(ΔP)</strong>이 급격히 증가했습니다. 이동 속도 연산(거리÷속도) 기준 약 6분 후 본관 도달이 예상됩니다.';
+
+        showToast('초단기 예보: 시닉밸리 비 감지 & 기압 급변동 분석!');
+
+      } else if (mode === 'rain') {
+        document.getElementById('btnRain').classList.add('active');
+        clearInterval(timerId);
+
+        heroCard.style.background = '#0F2042';
+        heroPill.style.background = '#00B140';
+        heroPillText.innerText = '현재 강우 중';
+        heroTimer.innerText = '스콜 폭우';
+        heroTitle.innerHTML = '학교 본관 및 정문에 비가 시작되었습니다.<br>안전한 실내로 이동해주세요.';
+        heroDesc.innerText = '운동장 체육 활동이 중단되었습니다. 정문 앞 도로 침수 주의!';
+        heroBgIcon.className = 'fa-solid fa-cloud-showers-water hero-icon-bg';
+
+        wTemp.innerText = '27°';
+        wDesc.innerText = '강한 스콜 (강수량 22mm/h)';
+        wIcon.innerHTML = '<i class="fa-solid fa-cloud-showers-heavy" style="color: #49C5B1;"></i>';
+
+        scienceBar.style.height = '20%';
+        scienceBar.className = 'science-bar-fill drop';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 정문 및 본관 센서에서도 <strong>강우 및 도로 물고임 감지</strong>. 저기압 중심 통과 중.';
+
+        showToast('비 도달: 정문 센서 비 도달 및 도로 침수 감지');
+
+      } else if (mode === 'clear') {
+        document.getElementById('btnClear').classList.add('active');
+        clearInterval(timerId);
+
+        heroCard.style.background = '#050A33';
+        heroPill.style.background = '#49C5B1';
+        heroPillText.innerText = '비 그침 예보';
+        heroTimer.innerText = '약 10분 뒤 그침';
+        heroTitle.innerHTML = '빗줄기가 잦아들고 있습니다.<br>약 10분 뒤 비가 완전히 그칩니다.';
+        heroDesc.innerText = '구름이 동쪽으로 빠져나가고 있습니다. 안전하게 하교하세요!';
+        heroBgIcon.className = 'fa-solid fa-cloud-sun hero-icon-bg';
+
+        wTemp.innerText = '28°';
+        wDesc.innerText = '비 그치는 중 (기압 회복)';
+        wIcon.innerHTML = '<i class="fa-solid fa-cloud-sun" style="color: #49C5B1;"></i>';
+
+        scienceBar.style.height = '68%';
+        scienceBar.className = 'science-bar-fill';
+        scienceCaption.innerHTML = '<i class="fa-regular fa-lightbulb" style="color: var(--accent-blue);"></i> 빗방울 센서 빈도가 줄어들고 기압이 <strong>1009 hPa로 회복</strong> 중입니다. 10분 뒤 개일 예정.';
+
+        showToast('비 그침: 약 10분 뒤 완전히 갤 예정');
+      }
+    }
+  </script>
+</body>
+
+</html>
